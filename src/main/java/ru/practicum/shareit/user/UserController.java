@@ -3,7 +3,7 @@ package ru.practicum.shareit.user;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.exception.UserAlreadyExists;
+import ru.practicum.shareit.user.exception.UserAlreadyExistsException;
 import ru.practicum.shareit.user.exception.UserNotFoundException;
 
 import java.util.Collection;
@@ -16,13 +16,13 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping
-    public UserDto createUser(@RequestBody UserDto userDto) throws UserAlreadyExists {
+    public UserDto createUser(@RequestBody UserDto userDto) throws UserAlreadyExistsException {
         return userService.createUser(userDto);
     }
 
     @PatchMapping("/{userId}")
     public UserDto updateUser(@RequestBody UserDto userDto, @PathVariable Long userId)
-            throws UserNotFoundException, UserAlreadyExists {
+            throws UserNotFoundException, UserAlreadyExistsException {
         return userService.updateUser(userId, userDto);
     }
 

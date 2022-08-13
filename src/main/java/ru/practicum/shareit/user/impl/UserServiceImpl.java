@@ -6,7 +6,7 @@ import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.UserStorage;
 import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.exception.UserAlreadyExists;
+import ru.practicum.shareit.user.exception.UserAlreadyExistsException;
 import ru.practicum.shareit.user.exception.UserNotFoundException;
 import ru.practicum.shareit.user.mapper.UserMapper;
 
@@ -25,7 +25,7 @@ public class UserServiceImpl implements UserService {
     private final UserStorage userStorage;
 
     @Override
-    public UserDto createUser(UserDto userDto) throws UserAlreadyExists {
+    public UserDto createUser(UserDto userDto) throws UserAlreadyExistsException {
         checkUserByEmail(userDto);
         validateUser(userDto);
         User user = new User();
@@ -35,7 +35,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto updateUser(Long userId, UserDto userDto) throws UserNotFoundException, UserAlreadyExists {
+    public UserDto updateUser(Long userId, UserDto userDto) throws UserNotFoundException, UserAlreadyExistsException {
         User user = userStorage.getUserById(userId);
         if (user == null) {
             throw new UserNotFoundException(String.format("User %s not found", userDto.getEmail()));
@@ -83,10 +83,10 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    private void checkUserByEmail(UserDto userDto) throws UserAlreadyExists {
+    private void checkUserByEmail(UserDto userDto) throws UserAlreadyExistsException {
         User user = userStorage.getUserByEmail(userDto.getEmail());
         if (user != null) {
-            throw new UserAlreadyExists(String.format("User with email %s already exist",
+            throw new UserAlreadyExistsException(String.format("User with email %s already exist",
                     userDto.getEmail()));
         }
     }

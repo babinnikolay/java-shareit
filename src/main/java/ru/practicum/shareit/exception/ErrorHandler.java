@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.practicum.shareit.item.exception.ItemNotFoundException;
-import ru.practicum.shareit.user.exception.UserAlreadyExists;
+import ru.practicum.shareit.user.exception.UserAlreadyExistsException;
 import ru.practicum.shareit.user.exception.UserNotFoundException;
 
 import javax.validation.ConstraintViolation;
@@ -17,8 +17,8 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
-    public UserAlreadyExists handleValidationException(final UserAlreadyExists e) {
-        return new UserAlreadyExists(e.getMessage());
+    public UserAlreadyExistsException handleValidationException(final UserAlreadyExistsException e) {
+        return new UserAlreadyExistsException(e.getMessage());
     }
 
     @ExceptionHandler
