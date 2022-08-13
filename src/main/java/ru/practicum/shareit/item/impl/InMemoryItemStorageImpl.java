@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 public class InMemoryItemStorageImpl implements ItemStorage {
     private final Map<Long, Item> items = new HashMap<>();
     private Long lastId = 1L;
+
     @Override
     public Item saveItem(Item item) {
         if (item.getId() == null) {
@@ -43,7 +44,7 @@ public class InMemoryItemStorageImpl implements ItemStorage {
                 .filter(Item::isAvailable)
                 .filter(text.isEmpty() ? item -> false : item ->
                         (item.getName().toLowerCase().contains(text.toLowerCase())
-                        || item.getDescription().toLowerCase().contains(text.toLowerCase())))
+                                || item.getDescription().toLowerCase().contains(text.toLowerCase())))
                 .collect(Collectors.toList());
     }
 
