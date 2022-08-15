@@ -13,8 +13,7 @@ public class ItemMapper {
                 item.getId(),
                 item.getName(),
                 item.getDescription(),
-                item.isAvailable(),
-                item.getRequest().getId());
+                item.isAvailable());
     }
 
     public static Item toItem(ItemDto itemDto) {
