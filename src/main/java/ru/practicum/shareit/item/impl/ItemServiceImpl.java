@@ -7,7 +7,7 @@ import ru.practicum.shareit.item.ItemStorage;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.exception.ItemNotFoundException;
 import ru.practicum.shareit.item.mapper.ItemMapper;
-import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.Item;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserStorage;
 import ru.practicum.shareit.user.exception.UserNotFoundException;
@@ -32,18 +32,19 @@ public class ItemServiceImpl implements ItemService {
         validateItem(itemDto);
         Item item = ItemMapper.toItem(itemDto);
         item.setOwner(user);
-        return ItemMapper.toItemDto(itemStorage.saveItem(item));
+        itemStorage.saveItem(item);
+        itemDto.setId(item.getId());
+        return itemDto;
     }
 
     @Override
     public ItemDto updateItem(ItemDto itemDto, Long itemId, Long userId) throws UserNotFoundException, ItemNotFoundException {
-        User user = getUserById(userId);
         Item item = itemStorage.getItemById(itemId);
         if (item == null) {
             throw new ItemNotFoundException(String.format("Item with id %d not found", itemId));
         }
-        if (item.getOwner() != user) {
-            throw new UserNotFoundException(String.format("User with id %d not owner", itemId));
+        if (!item.getOwner().getId().equals(userId)) {
+            throw new UserNotFoundException(String.format("User with id %d is not owner", itemId));
         }
         if (itemDto.getName() != null && !itemDto.getName().isEmpty()) {
             item.setName(itemDto.getName());

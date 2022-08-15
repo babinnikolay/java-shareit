@@ -7,7 +7,6 @@ import ru.practicum.shareit.user.UserStorage;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 @Component
 public class ImMemoryUserStorageImpl implements UserStorage {
@@ -26,14 +25,11 @@ public class ImMemoryUserStorageImpl implements UserStorage {
 
     @Override
     public User getUserByEmail(String email) {
-        Optional<User> first = users.values()
+        return users.values()
                 .stream()
                 .filter(user -> user.getEmail().equals(email))
-                .findFirst();
-        if (first.isEmpty()) {
-            return null;
-        }
-        return first.get();
+                .findFirst()
+                .orElse(null);
     }
 
     @Override

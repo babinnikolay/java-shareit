@@ -1,8 +1,8 @@
 package ru.practicum.shareit.item.impl;
 
 import org.springframework.stereotype.Component;
+import ru.practicum.shareit.item.Item;
 import ru.practicum.shareit.item.ItemStorage;
-import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
 
 import java.util.Collection;
@@ -33,19 +33,19 @@ public class InMemoryItemStorageImpl implements ItemStorage {
     public Collection<Item> getAllItemsByUser(User user) {
         return items.values()
                 .stream()
-                .filter(item -> item.getOwner() == user)
+                .filter(item -> item.getOwner().getId().equals(user.getId()))
                 .collect(Collectors.toList());
     }
 
     @Override
     public Collection<Item> searchItems(String text) {
+        String textInLowerCase = text.toLowerCase();
         return items.values()
                 .stream()
                 .filter(Item::isAvailable)
-                .filter(text.isEmpty() ? item -> false : item ->
-                        (item.getName().toLowerCase().contains(text.toLowerCase())
-                                || item.getDescription().toLowerCase().contains(text.toLowerCase())))
+                .filter(text.isEmpty() ? item -> false :
+                        item -> (item.getName().toLowerCase().contains(textInLowerCase)
+                                || item.getDescription().toLowerCase().contains(textInLowerCase)))
                 .collect(Collectors.toList());
     }
-
 }
