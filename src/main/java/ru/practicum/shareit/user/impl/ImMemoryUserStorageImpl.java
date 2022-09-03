@@ -1,20 +1,16 @@
 package ru.practicum.shareit.user.impl;
 
-import org.springframework.stereotype.Component;
 import ru.practicum.shareit.user.User;
-import ru.practicum.shareit.user.UserStorage;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-@Component
-public class ImMemoryUserStorageImpl implements UserStorage {
+public class ImMemoryUserStorageImpl {
 
     private final Map<Long, User> users = new HashMap<>();
     private Long lastId = 1L;
 
-    @Override
     public User saveUser(User user) {
         if (user.getId() == null) {
             user.setId(lastId++);
@@ -23,7 +19,6 @@ public class ImMemoryUserStorageImpl implements UserStorage {
         return user;
     }
 
-    @Override
     public User getUserByEmail(String email) {
         return users.values()
                 .stream()
@@ -32,17 +27,14 @@ public class ImMemoryUserStorageImpl implements UserStorage {
                 .orElse(null);
     }
 
-    @Override
     public User getUserById(Long userId) {
         return users.get(userId);
     }
 
-    @Override
     public void deleteUserById(Long userId) {
         users.remove(userId);
     }
 
-    @Override
     public Collection<User> getAllUsers() {
         return users.values();
     }

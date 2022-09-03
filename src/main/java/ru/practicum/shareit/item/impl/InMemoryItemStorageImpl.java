@@ -1,8 +1,6 @@
 package ru.practicum.shareit.item.impl;
 
-import org.springframework.stereotype.Component;
 import ru.practicum.shareit.item.Item;
-import ru.practicum.shareit.item.ItemStorage;
 import ru.practicum.shareit.user.User;
 
 import java.util.Collection;
@@ -10,12 +8,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@Component
-public class InMemoryItemStorageImpl implements ItemStorage {
+public class InMemoryItemStorageImpl {
     private final Map<Long, Item> items = new HashMap<>();
     private Long lastId = 1L;
 
-    @Override
     public Item saveItem(Item item) {
         if (item.getId() == null) {
             item.setId(lastId++);
@@ -24,12 +20,10 @@ public class InMemoryItemStorageImpl implements ItemStorage {
         return item;
     }
 
-    @Override
     public Item getItemById(Long itemId) {
         return items.get(itemId);
     }
 
-    @Override
     public Collection<Item> getAllItemsByUser(User user) {
         return items.values()
                 .stream()
@@ -37,7 +31,6 @@ public class InMemoryItemStorageImpl implements ItemStorage {
                 .collect(Collectors.toList());
     }
 
-    @Override
     public Collection<Item> searchItems(String text) {
         String textInLowerCase = text.toLowerCase();
         return items.values()
