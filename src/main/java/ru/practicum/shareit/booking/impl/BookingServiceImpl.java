@@ -53,11 +53,11 @@ public class BookingServiceImpl implements BookingService {
             throws NotFoundException, BadRequestException {
         User owner = getUserById(ownerId);
 
-        Optional<Booking> optional = bookingStorage.findById(bookingId);
-        if (bookingId == null || optional.isEmpty()) {
-            throw new NotFoundException(String.format("Booking with id %s not found", bookingId));
-        }
-        Booking booking = optional.get();
+        Optional<Booking> optionalBooking = bookingStorage.findById(bookingId);
+
+        Booking booking = optionalBooking.orElseThrow(
+                () -> new NotFoundException(String.format("Booking with id %s not found", bookingId)));
+
         if (booking.getStatus() == BookingStatus.APPROVED && Boolean.TRUE.equals(approved)) {
             throw new BadRequestException(String.format("Booking with id %s already approved", bookingId));
         }
@@ -73,7 +73,8 @@ public class BookingServiceImpl implements BookingService {
             booking.setStatus(BookingStatus.REJECTED);
         }
 
-        return BookingMapper.toBookingDto(bookingStorage.save(booking));
+        Booking savedBooking = bookingStorage.save(booking);
+        return BookingMapper.toBookingDto(savedBooking);
     }
 
     @Override

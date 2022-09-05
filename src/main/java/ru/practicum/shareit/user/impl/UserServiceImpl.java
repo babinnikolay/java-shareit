@@ -36,11 +36,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto updateUser(Long userId, UserDto userDto) throws NotFoundException, ConflictException {
-        Optional<User> optional = userStorage.findById(userId);
-        if (optional.isEmpty()) {
+        Optional<User> optionalUser = userStorage.findById(userId);
+        if (optionalUser.isEmpty()) {
             throw new NotFoundException(String.format("User %s not found", userDto.getEmail()));
         }
-        User user = optional.get();
+        User user = optionalUser.orElseThrow(() -> new NotFoundException("User not found"));
         if (userDto.getName() != null && !userDto.getName().isEmpty()) {
             user.setName(userDto.getName());
         }

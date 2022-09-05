@@ -6,7 +6,6 @@ import ru.practicum.shareit.user.User;
 
 import java.util.List;
 
-@Repository
 public interface ItemStorage extends JpaRepository<Item, Long> {
 
     List<Item> findAllByOwnerOrderById(User owner);
