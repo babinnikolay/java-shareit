@@ -1,7 +1,10 @@
 package ru.practicum.shareit.item.mapper;
 
+import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.Item;
+
+import java.util.stream.Collectors;
 
 public class ItemMapper {
 
@@ -9,11 +12,19 @@ public class ItemMapper {
     }
 
     public static ItemDto toItemDto(Item item) {
-        return new ItemDto(
+        ItemDto itemDto =  new ItemDto(
                 item.getId(),
                 item.getName(),
                 item.getDescription(),
                 item.isAvailable());
+
+        itemDto.setLastBooking(BookingMapper.toNextBookingDto(item.getLastBooking()));
+        itemDto.setNextBooking(BookingMapper.toNextBookingDto(item.getNextBooking()));
+        itemDto.setComments(item.getComments()
+                .stream()
+                .map(CommentMapper::toDto)
+                .collect(Collectors.toSet()));
+        return itemDto;
     }
 
     public static Item toItem(ItemDto itemDto) {

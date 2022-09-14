@@ -2,9 +2,11 @@ package ru.practicum.shareit.item;
 
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.constant.Constant;
+import ru.practicum.shareit.exception.BadRequestException;
+import ru.practicum.shareit.exception.NotFoundException;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.exception.ItemNotFoundException;
-import ru.practicum.shareit.user.exception.UserNotFoundException;
 
 import java.util.Collection;
 
@@ -14,36 +16,44 @@ import java.util.Collection;
 public class ItemController {
 
     private final ItemService itemService;
-    private static final String USER_ID_HEADER = "X-Sharer-User-Id";
+
 
     @PostMapping
     public ItemDto createItem(@RequestBody ItemDto itemDto,
-                              @RequestHeader(USER_ID_HEADER) Long userId) throws UserNotFoundException {
+                              @RequestHeader(Constant.USER_ID_HEADER) Long userId) throws NotFoundException {
         return itemService.createItem(itemDto, userId);
     }
 
     @PatchMapping("/{itemId}")
     public ItemDto updateItem(@RequestBody ItemDto itemDto,
                               @PathVariable Long itemId,
-                              @RequestHeader(USER_ID_HEADER) Long userId)
-            throws UserNotFoundException, ItemNotFoundException {
+                              @RequestHeader(Constant.USER_ID_HEADER) Long userId)
+            throws NotFoundException {
         return itemService.updateItem(itemDto, itemId, userId);
     }
 
-    @GetMapping("{itemId}")
+    @GetMapping("/{itemId}")
     public ItemDto getItem(@PathVariable Long itemId,
-                           @RequestHeader(USER_ID_HEADER) Long userId) throws ItemNotFoundException {
+                           @RequestHeader(Constant.USER_ID_HEADER) Long userId) throws NotFoundException {
         return itemService.getItem(itemId, userId);
     }
 
     @GetMapping
-    public Collection<ItemDto> getAllItems(@RequestHeader(USER_ID_HEADER) Long userId) throws UserNotFoundException {
+    public Collection<ItemDto> getAllItems(@RequestHeader(Constant.USER_ID_HEADER) Long userId) throws NotFoundException {
         return itemService.getAllItemsByUser(userId);
     }
 
     @GetMapping("/search")
-    public Collection<ItemDto> searchItems(@RequestHeader(value = USER_ID_HEADER) Long userId,
-                                           @RequestParam String text) throws UserNotFoundException {
+    public Collection<ItemDto> searchItems(@RequestHeader(value = Constant.USER_ID_HEADER) Long userId,
+                                           @RequestParam String text) throws NotFoundException {
         return itemService.searchItems(text);
+    }
+
+    @PostMapping("/{itemId}/comment")
+    public CommentDto createComment(@PathVariable Long itemId,
+                                 @RequestBody CommentDto commentDto,
+                                 @RequestHeader(Constant.USER_ID_HEADER) Long userId)
+            throws NotFoundException, BadRequestException {
+        return itemService.createComment(itemId, commentDto, userId);
     }
 }

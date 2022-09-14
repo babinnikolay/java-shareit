@@ -1,19 +1,22 @@
 package ru.practicum.shareit.item;
 
+import ru.practicum.shareit.exception.BadRequestException;
+import ru.practicum.shareit.exception.NotFoundException;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.exception.ItemNotFoundException;
-import ru.practicum.shareit.user.exception.UserNotFoundException;
 
 import java.util.Collection;
 
 public interface ItemService {
-    ItemDto createItem(ItemDto itemDto, Long userId) throws UserNotFoundException;
+    ItemDto createItem(ItemDto itemDto, Long userId) throws NotFoundException;
 
-    ItemDto updateItem(ItemDto itemDto, Long itemId, Long userId) throws UserNotFoundException, ItemNotFoundException;
+    ItemDto updateItem(ItemDto itemDto, Long itemId, Long userId) throws  NotFoundException;
 
-    ItemDto getItem(Long itemId, Long userId) throws ItemNotFoundException;
+    ItemDto getItem(Long itemId, Long userId) throws NotFoundException;
 
-    Collection<ItemDto> getAllItemsByUser(Long userId) throws UserNotFoundException;
+    Collection<ItemDto> getAllItemsByUser(Long userId) throws NotFoundException;
 
-    Collection<ItemDto> searchItems(String text) throws UserNotFoundException;
+    Collection<ItemDto> searchItems(String text) throws NotFoundException;
+
+    CommentDto createComment(Long itemId, CommentDto commentDto, Long userId) throws NotFoundException, BadRequestException;
 }
