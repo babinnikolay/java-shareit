@@ -35,7 +35,7 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.CONFLICT)
     @ResponseBody
     public ErrorResponse handleDataIntegrityViolationException(DataIntegrityViolationException e) {
-        if (e.getMessage().contains("user_email")) {
+        if (e.getMessage() != null && e.getMessage().contains("user_email")) {
             return new ErrorResponse("Email already exists");
         }
         return new ErrorResponse(e.getMessage());

@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item.impl;
 
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingStatus;
@@ -12,6 +13,8 @@ import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.mapper.CommentMapper;
 import ru.practicum.shareit.item.mapper.ItemMapper;
+import ru.practicum.shareit.requests.ItemRequest;
+import ru.practicum.shareit.requests.ItemRequestStorage;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserStorage;
 
@@ -30,13 +33,18 @@ public class ItemServiceImpl implements ItemService {
     private final UserStorage userStorage;
     private final BookingStorage bookingStorage;
     private final CommentStorage commentStorage;
-
+    private final ItemRequestStorage itemRequestStorage;
     @Override
     public ItemDto createItem(ItemDto itemDto, Long userId) throws NotFoundException {
         User user = getUserById(userId);
         validateItem(itemDto);
         Item item = ItemMapper.toItem(itemDto);
         item.setOwner(user);
+        if (itemDto.getRequestId() != null) {
+            ItemRequest itemRequest = itemRequestStorage.findById(itemDto.getRequestId()).orElseThrow(() ->
+                    new NotFoundException(String.format("Request by id %s not found", itemDto.getRequestId())));
+            item.setRequest(itemRequest);
+        }
         itemStorage.save(item);
         itemDto.setId(item.getId());
         return itemDto;
@@ -44,11 +52,10 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto updateItem(ItemDto itemDto, Long itemId, Long userId) throws NotFoundException {
-        Optional<Item> optional = itemStorage.findById(itemId);
-        if (optional.isEmpty()) {
-            throw new NotFoundException(String.format("Item with id %d not found", itemId));
-        }
-        Item item = optional.get();
+        Item item = itemStorage.findById(itemId).orElseThrow(
+                () -> new NotFoundException(String.format("Item with id %d not found", itemId))
+        );
+
         if (!item.getOwner().getId().equals(userId)) {
             throw new NotFoundException(String.format("User with id %d is not owner", itemId));
         }
@@ -61,16 +68,14 @@ public class ItemServiceImpl implements ItemService {
         if (itemDto.getDescription() != null && !itemDto.getDescription().isEmpty()) {
             item.setDescription(itemDto.getDescription());
         }
-        return ItemMapper.toItemDto(itemStorage.save(item));
+        itemStorage.save(item);
+        return ItemMapper.toItemDto(item);
     }
 
     @Override
     public ItemDto getItem(Long itemId, Long userId) throws NotFoundException {
-        Optional<Item> optional = itemStorage.findById(itemId);
-        if (optional.isEmpty()) {
-            throw new NotFoundException(String.format("Item with id %d not found", itemId));
-        }
-        Item item = optional.get();
+        Item item = itemStorage.findById(itemId).orElseThrow(() ->
+                new NotFoundException(String.format("Item with id %d not found", itemId)));
         item.setLastBooking(getLastItemBooking(itemId, userId));
         item.setNextBooking(getNextItemBooking(itemId, userId));
         item.setComments(getItemComments(itemId));
@@ -78,18 +83,14 @@ public class ItemServiceImpl implements ItemService {
         return ItemMapper.toItemDto(item);
     }
 
-    private Set<Comment> getItemComments(Long itemId) {
-        return commentStorage.findAllByItemId(itemId);
-    }
-
     @Override
-    public Collection<ItemDto> getAllItemsByUser(Long userId) throws NotFoundException {
-        Optional<User> optional = userStorage.findById(userId);
-        if (optional.isEmpty()) {
-            throw new NotFoundException(String.format("User with id %d not found", userId));
-        }
+    public Collection<ItemDto> getAllItemsByUser(Long userId, Integer from, Integer size) throws NotFoundException {
+        User user = userStorage.findById(userId)
+                .orElseThrow(() -> new NotFoundException(String.format("User with id %d not found", userId)));
+
+        PageRequest page = PageRequest.of(from / size, size);
         List<ItemDto> list = new ArrayList<>();
-        for (Item item : itemStorage.findAllByOwnerOrderById(optional.get())) {
+        for (Item item : itemStorage.findAllByOwnerOrderById(user, page)) {
             item.setNextBooking(getNextItemBooking(item.getId(), userId));
             item.setLastBooking(getLastItemBooking(item.getId(), userId));
             ItemDto itemDto = ItemMapper.toItemDto(item);
@@ -99,11 +100,13 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public Collection<ItemDto> searchItems(String text) {
+    public Collection<ItemDto> searchItems(String text, Integer from, Integer size) {
         if (text.isEmpty()) {
             return Collections.emptyList();
         }
-        return itemStorage.findAllByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndAvailableTrue(text, text)
+        PageRequest page = PageRequest.of(from / size, size);
+        return itemStorage
+                .findAllByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndAvailableTrue(text, text, page)
                 .stream()
                 .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());
@@ -114,11 +117,9 @@ public class ItemServiceImpl implements ItemService {
             throws NotFoundException, BadRequestException {
         validateComment(commentDto);
         User author = getUserById(userId);
-        Optional<Item> optional = itemStorage.findById(itemId);
-        if (optional.isEmpty()) {
-            throw new NotFoundException(String.format("Item with id %d not found", itemId));
-        }
-        Item item = optional.get();
+        Item item = itemStorage.findById(itemId).orElseThrow(
+                () -> new NotFoundException(String.format("Item with id %d not found", itemId)
+                ));
         LocalDateTime now = LocalDateTime.now();
         Collection<Booking> bookings = bookingStorage.findBookingByItemIdAndStatusAndStartBefore(
                 itemId, BookingStatus.APPROVED, now);
@@ -132,12 +133,13 @@ public class ItemServiceImpl implements ItemService {
         return CommentMapper.toDto(commentStorage.save(comment));
     }
 
+    private Set<Comment> getItemComments(Long itemId) {
+        return commentStorage.findAllByItemId(itemId);
+    }
+
     private User getUserById(Long userId) throws NotFoundException {
-        Optional<User> optional = userStorage.findById(userId);
-        if (optional.isEmpty()) {
-            throw new NotFoundException(String.format("user with id %s not found", userId));
-        }
-        return optional.get();
+        return userStorage.findById(userId).orElseThrow(
+                () -> new NotFoundException(String.format("user with id %s not found", userId)));
     }
 
     private void validateItem(ItemDto itemDto) {

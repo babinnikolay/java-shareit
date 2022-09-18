@@ -36,11 +36,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto updateUser(Long userId, UserDto userDto) throws NotFoundException, ConflictException {
-        Optional<User> optionalUser = userStorage.findById(userId);
-        if (optionalUser.isEmpty()) {
-            throw new NotFoundException(String.format("User %s not found", userDto.getEmail()));
-        }
-        User user = optionalUser.orElseThrow(() -> new NotFoundException("User not found"));
+        User user = userStorage.findById(userId).orElseThrow(
+                () -> new NotFoundException(String.format("User %s not found", userDto.getEmail())
+                ));
         if (userDto.getName() != null && !userDto.getName().isEmpty()) {
             user.setName(userDto.getName());
         }
@@ -53,17 +51,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto getUserById(Long userId) throws NotFoundException {
-        Optional<User> optional = userStorage.findById(userId);
-        if (optional.isEmpty()) {
-            throw new NotFoundException(String.format("User with id %d not found", userId));
-        }
-        return UserMapper.toUserDto(optional.get());
+        User user = userStorage.findById(userId).orElseThrow(
+                () -> new NotFoundException(String.format("User with id %d not found", userId))
+        );
+        return UserMapper.toUserDto(user);
     }
 
     @Override
     public void deleteUserById(Long userId) throws NotFoundException {
-        Optional<User> optional = userStorage.findById(userId);
-        if (optional.isEmpty()) {
+        if (!userStorage.existsById(userId)) {
             throw new NotFoundException(String.format("User with id %d not found", userId));
         }
         userStorage.deleteById(userId);
@@ -87,7 +83,7 @@ public class UserServiceImpl implements UserService {
 
     private void checkUserByEmail(UserDto userDto) throws ConflictException {
         Optional<User> optional = userStorage.findByEmail(userDto.getEmail());
-        if (!optional.isEmpty()) {
+        if (optional.isPresent()) {
             throw new ConflictException(String.format("User with email %s already exist",
                     userDto.getEmail()));
         }
