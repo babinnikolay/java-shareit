@@ -5,19 +5,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingService;
 import ru.practicum.shareit.booking.BookingState;
 import ru.practicum.shareit.booking.BookingStorage;
-import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.impl.BookingServiceImpl;
 import ru.practicum.shareit.exception.NotFoundException;
-import ru.practicum.shareit.item.Item;
 import ru.practicum.shareit.item.ItemStorage;
-import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserStorage;
-
-import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 

@@ -14,8 +14,6 @@ import ru.practicum.shareit.constant.Constant;
 import ru.practicum.shareit.requests.ItemRequestController;
 import ru.practicum.shareit.requests.ItemRequestService;
 import ru.practicum.shareit.requests.dto.ItemRequestDto;
-import ru.practicum.shareit.user.UserController;
-import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.dto.UserDto;
 
 import java.nio.charset.StandardCharsets;
@@ -23,9 +21,9 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 

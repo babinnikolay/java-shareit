@@ -44,7 +44,7 @@ public class ItemController {
     public Collection<ItemDto> getAllItems(@RequestHeader(Constant.USER_ID_HEADER) Long userId,
                                            @RequestParam(required = false, defaultValue = "0") @Min(0) Integer from,
                                            @RequestParam(required = false, defaultValue = "100")
-                                               @Min(1) Integer size) throws NotFoundException {
+                                           @Min(1) Integer size) throws NotFoundException {
         return itemService.getAllItemsByUser(userId, from, size);
     }
 
@@ -53,14 +53,14 @@ public class ItemController {
                                            @RequestParam String text,
                                            @RequestParam(required = false, defaultValue = "0") @Min(0) Integer from,
                                            @RequestParam(required = false, defaultValue = "100")
-                                               @Min(1) Integer size) throws NotFoundException {
+                                           @Min(1) Integer size) throws NotFoundException {
         return itemService.searchItems(text, from, size);
     }
 
     @PostMapping("/{itemId}/comment")
     public CommentDto createComment(@PathVariable Long itemId,
-                                 @RequestBody CommentDto commentDto,
-                                 @RequestHeader(Constant.USER_ID_HEADER) Long userId)
+                                    @RequestBody CommentDto commentDto,
+                                    @RequestHeader(Constant.USER_ID_HEADER) Long userId)
             throws NotFoundException, BadRequestException {
         return itemService.createComment(itemId, commentDto, userId);
     }

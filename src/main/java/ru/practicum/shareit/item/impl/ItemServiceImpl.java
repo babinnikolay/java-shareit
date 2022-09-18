@@ -34,6 +34,7 @@ public class ItemServiceImpl implements ItemService {
     private final BookingStorage bookingStorage;
     private final CommentStorage commentStorage;
     private final ItemRequestStorage itemRequestStorage;
+
     @Override
     public ItemDto createItem(ItemDto itemDto, Long userId) throws NotFoundException {
         User user = getUserById(userId);

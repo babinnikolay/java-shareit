@@ -10,7 +10,7 @@ import java.util.Collection;
 public interface ItemService {
     ItemDto createItem(ItemDto itemDto, Long userId) throws NotFoundException;
 
-    ItemDto updateItem(ItemDto itemDto, Long itemId, Long userId) throws  NotFoundException;
+    ItemDto updateItem(ItemDto itemDto, Long itemId, Long userId) throws NotFoundException;
 
     ItemDto getItem(Long itemId, Long userId) throws NotFoundException;
 

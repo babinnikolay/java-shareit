@@ -8,7 +8,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.requests.ItemRequestService;
 import ru.practicum.shareit.requests.ItemRequestStorage;
-import ru.practicum.shareit.requests.dto.ItemRequestDto;
 import ru.practicum.shareit.requests.impl.ItemRequestServiceImpl;
 import ru.practicum.shareit.user.UserStorage;
 
@@ -27,6 +26,7 @@ class GetAllRequestsTest {
     void setUp() {
         itemRequestService = new ItemRequestServiceImpl(itemRequestStorageStub, userStorageStub);
     }
+
     @Test
     void whenGetAllRequestsNonExistsUserThenThrowNotFoundException() {
         Long ownerId = 1L;

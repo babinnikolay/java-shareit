@@ -8,7 +8,6 @@ import org.springframework.boot.test.json.JsonContent;
 import ru.practicum.shareit.booking.dto.NextBookingDto;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.user.dto.UserDto;
 
 import java.io.IOException;
 import java.time.LocalDateTime;

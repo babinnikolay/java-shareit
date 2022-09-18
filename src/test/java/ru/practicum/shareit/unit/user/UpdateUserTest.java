@@ -13,8 +13,6 @@ import ru.practicum.shareit.user.UserStorage;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.impl.UserServiceImpl;
 
-import javax.validation.ConstraintViolationException;
-
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -48,6 +46,7 @@ class UpdateUserTest {
         assertThrows(NotFoundException.class,
                 () -> userService.updateUser(userId, userDto));
     }
+
     @Test
     void whenUpdateUserWithoutEmailThenThrowConflictException() {
         User newUser = new User();

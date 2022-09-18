@@ -7,19 +7,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.practicum.shareit.booking.BookingStorage;
-import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.CommentStorage;
-import ru.practicum.shareit.item.Item;
 import ru.practicum.shareit.item.ItemService;
 import ru.practicum.shareit.item.ItemStorage;
-import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.impl.ItemServiceImpl;
 import ru.practicum.shareit.requests.ItemRequestStorage;
-import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserStorage;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(MockitoExtension.class)
 class SearchItemsTest {

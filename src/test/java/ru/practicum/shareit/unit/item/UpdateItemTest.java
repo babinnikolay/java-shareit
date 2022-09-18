@@ -17,7 +17,6 @@ import ru.practicum.shareit.requests.ItemRequestStorage;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserStorage;
 
-import javax.validation.ConstraintViolationException;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
