@@ -183,6 +183,8 @@ class ItemTest {
         booking.setItem(item);
         booking.setBooker(booker);
 
+        bookingStorage.save(booking);
+
         createCommentDto("text1", itemDto.getId(), userDto.getId());
         createCommentDto("text2", itemDto.getId(), userDto.getId());
 
