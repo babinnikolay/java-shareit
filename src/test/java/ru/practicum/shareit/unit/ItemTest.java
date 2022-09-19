@@ -1,4 +1,4 @@
-package ru.practicum.shareit.unit.item;
+package ru.practicum.shareit.unit;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,13 +17,14 @@ import ru.practicum.shareit.requests.ItemRequestStorage;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserStorage;
 
+import javax.validation.ConstraintViolationException;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class UpdateItemTest {
+class ItemTest {
 
     private ItemService itemService;
     @Mock
@@ -38,6 +39,7 @@ class UpdateItemTest {
     private ItemRequestStorage itemRequestStorageStub;
     private ItemDto itemDto;
     private Long userId;
+    private User user;
     private Long itemId;
     private Item item;
     private User owner;
@@ -51,12 +53,73 @@ class UpdateItemTest {
         itemDto.setDescription("desc");
         itemDto.setAvailable(false);
         userId = 1L;
-        User user = new User();
+        user = new User();
         itemId = 1L;
         item = new Item();
         item.setId(1L);
         owner = new User();
+    }
 
+    @Test
+    void whenCreateItemNonExistUserThenThrowNotFoundException() {
+        assertThrows(NotFoundException.class,
+                () -> itemService.createItem(itemDto, userId));
+    }
+
+    @Test
+    void whenItemDtoWithoutNameThenThrowValidateException() {
+        itemDto.setName("");
+        when(userStorageStub.findById(userId)).thenReturn(Optional.of(user));
+        assertThrows(ConstraintViolationException.class,
+                () -> itemService.createItem(itemDto, userId));
+    }
+
+    @Test
+    void whenItemDtoWithoutDescriptionThenThrowValidateException() {
+        itemDto.setDescription("");
+        when(userStorageStub.findById(userId)).thenReturn(Optional.of(user));
+        assertThrows(ConstraintViolationException.class,
+                () -> itemService.createItem(itemDto, userId));
+    }
+
+    @Test
+    void whenItemDtoWithoutAvailableThenThrowValidateException() {
+        itemDto.setAvailable(null);
+        when(userStorageStub.findById(userId)).thenReturn(Optional.of(user));
+        assertThrows(ConstraintViolationException.class,
+                () -> itemService.createItem(itemDto, userId));
+    }
+
+    @Test
+    void whenItemDtoWithNonExistsRequestThenThrowNotFoundException() {
+        itemDto.setRequestId(1L);
+        when(userStorageStub.findById(userId)).thenReturn(Optional.of(user));
+        assertThrows(NotFoundException.class,
+                () -> itemService.createItem(itemDto, userId));
+    }
+
+    @Test
+    void whenItemDtoSaveThenOk() throws NotFoundException {
+        when(userStorageStub.findById(userId)).thenReturn(Optional.of(user));
+        itemDto = itemService.createItem(itemDto, userId);
+        assertNotNull(itemDto);
+    }
+
+    @Test
+    void whenGetAllItemsNonExistUserThenThrowNotFoundException() {
+        assertThrows(NotFoundException.class,
+                () -> itemService.getAllItemsByUser(userId, 0, 1));
+    }
+
+    @Test
+    void whenGetItemNonExistItemThenThrowNotFoundException() {
+        assertThrows(NotFoundException.class,
+                () -> itemService.getItem(itemId, userId));
+    }
+
+    @Test
+    void whenSearchBlackTextThenThrowNotFoundException() throws NotFoundException {
+        assertEquals(0, itemService.searchItems("", 0, 1).size());
     }
 
     @Test

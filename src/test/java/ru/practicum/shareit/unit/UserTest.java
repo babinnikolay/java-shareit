@@ -1,4 +1,4 @@
-package ru.practicum.shareit.unit.user;
+package ru.practicum.shareit.unit;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,32 +13,75 @@ import ru.practicum.shareit.user.UserStorage;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.impl.UserServiceImpl;
 
+import javax.validation.ConstraintViolationException;
+
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class UpdateUserTest {
+class UserTest {
 
     private UserService userService;
     @Mock
     private UserStorage userStorageStub;
     private UserDto userDto;
-    private User user;
     private Long userId;
+
+    private User user;
 
     @BeforeEach
     void setUp() {
         userService = new UserServiceImpl(userStorageStub);
-
-        user = new User();
 
         userDto = new UserDto();
         userDto.setName("name");
         userDto.setEmail("email@email.email");
 
         userId = 1L;
+
+        user = new User();
+    }
+
+    @Test
+    void whenCreateUserWithoutNameThenThrowValidateException() {
+        userDto.setName(null);
+        assertThrows(ConstraintViolationException.class,
+                () -> userService.createUser(userDto));
+    }
+
+    @Test
+    void whenCreateUserWithoutEmailThenThrowValidateException() {
+        userDto.setEmail(null);
+        assertThrows(ConstraintViolationException.class,
+                () -> userService.createUser(userDto));
+    }
+
+    @Test
+    void whenCreateUserWithWrongEmailThenThrowValidateException() {
+        userDto.setEmail("NotAnEmail.com");
+        assertThrows(ConstraintViolationException.class,
+                () -> userService.createUser(userDto));
+    }
+
+    @Test
+    void whenDeleteNonExistsUserThenThrowNotFoundException() {
+        assertThrows(NotFoundException.class,
+                () -> userService.deleteUserById(1L));
+    }
+
+    @Test
+    void whenGetAllThenVerifyCallFindAllMethod() {
+        userService.getAllUsers();
+        verify(userStorageStub, times(1)).findAll();
+    }
+
+    @Test
+    void whenGetNonExistsUserThenThrowNotFoundException() {
+        assertThrows(NotFoundException.class,
+                () -> userService.getUserById(1L));
     }
 
     @Test
@@ -57,4 +100,5 @@ class UpdateUserTest {
         assertThrows(ConflictException.class,
                 () -> userService.updateUser(userId, userDto));
     }
+
 }

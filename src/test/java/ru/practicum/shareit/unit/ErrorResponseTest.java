@@ -1,4 +1,4 @@
-package ru.practicum.shareit.unit.exception;
+package ru.practicum.shareit.unit;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,7 +11,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
-class ValidationErrorResponseTest {
+class ErrorResponseTest {
     private ValidationErrorResponse validationErrorResponse;
 
     @Test

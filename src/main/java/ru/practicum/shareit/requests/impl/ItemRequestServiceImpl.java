@@ -27,9 +27,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     public ItemRequestDto createRequest(ItemRequestDto requestDto, Long userId) throws NotFoundException {
         User user = userStorage.findById(userId)
                 .orElseThrow(() -> new NotFoundException(String.format(USER_MESSAGE, userId)));
-        ItemRequest itemRequest = ItemRequestMapper.toItemRequest(requestDto);
-        itemRequest.setCreated(LocalDateTime.now());
-        itemRequest.setUser(user);
+        ItemRequest itemRequest = ItemRequestMapper.toItemRequest(requestDto, LocalDateTime.now(), user);
         itemRequestStorage.save(itemRequest);
         return ItemRequestMapper.toItemRequestDto(itemRequest);
     }
