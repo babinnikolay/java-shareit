@@ -1,6 +1,8 @@
 package ru.practicum.shareit.booking.impl;
 
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.booking.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
@@ -19,7 +21,6 @@ import javax.validation.Validator;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -53,10 +54,9 @@ public class BookingServiceImpl implements BookingService {
             throws NotFoundException, BadRequestException {
         User owner = getUserById(ownerId);
 
-        Optional<Booking> optionalBooking = bookingStorage.findById(bookingId);
-
-        Booking booking = optionalBooking.orElseThrow(
+        Booking booking = bookingStorage.findById(bookingId).orElseThrow(
                 () -> new NotFoundException(String.format("Booking with id %s not found", bookingId)));
+
 
         if (booking.getStatus() == BookingStatus.APPROVED && Boolean.TRUE.equals(approved)) {
             throw new BadRequestException(String.format("Booking with id %s already approved", bookingId));
@@ -80,33 +80,32 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public BookingDto getBookingById(Long bookingId, Long userId)
             throws NotFoundException {
-        Optional<Booking> optional = bookingStorage.findById(bookingId);
+        Booking booking = bookingStorage.findById(bookingId).orElseThrow(
+                () -> new NotFoundException(String.format("Booking with id %s not found", bookingId))
+        );
         getUserById(userId);
 
-        if (optional.isEmpty()) {
-            throw new NotFoundException(String.format("Booking with id %s not found", bookingId));
-        }
-        Booking booking = optional.get();
         if (!booking.getItem().getOwner().getId().equals(userId)
                 && !booking.getBooker().getId().equals(userId)) {
             throw new NotFoundException(String.format("User with id %s does not have rights to item id %s",
                     userId, booking.getItem().getId()));
         }
-        return BookingMapper.toBookingDto(optional.get());
+        return BookingMapper.toBookingDto(booking);
     }
 
     @Override
-    public Collection<BookingDto> getAllBookingsByBookerId(Long bookerId, BookingState state)
+    public Collection<BookingDto> getAllBookingsByBookerId(Long bookerId, BookingState state,
+                                                           Integer from, Integer size)
             throws NotFoundException {
         getUserById(bookerId);
         Collection<Booking> bookings;
-
+        PageRequest page = PageRequest.of(from / size, size, Sort.Direction.DESC, "start");
         Set<BookingStatus> statuses = getStatusesByBookingState(state);
         if (state == BookingState.PAST) {
-            bookings = bookingStorage.findAllByBookerIdAndStatusInAndStartBeforeOrderByStartDesc(
-                    bookerId, statuses, LocalDateTime.now());
+            bookings = bookingStorage.findAllByBookerIdAndStatusInAndStartBefore(
+                    bookerId, statuses, LocalDateTime.now(), page);
         } else {
-            bookings = bookingStorage.findAllByBookerIdAndStatusInOrderByStartDesc(bookerId, statuses);
+            bookings = bookingStorage.findAllByBookerIdAndStatusIn(bookerId, statuses, page);
         }
 
         return bookings
@@ -116,16 +115,17 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public Collection<BookingDto> getAllBookingsByOwnerId(Long ownerId, BookingState state) throws NotFoundException {
+    public Collection<BookingDto> getAllBookingsByOwnerId(Long ownerId, BookingState state,
+                                                          Integer from, Integer size) throws NotFoundException {
         getUserById(ownerId);
         Collection<Booking> bookings;
-
+        PageRequest page = PageRequest.of(from / size, size);
         Set<BookingStatus> statuses = getStatusesByBookingState(state);
         if (state == BookingState.PAST) {
             bookings = bookingStorage.findAllByOwnerAndStatusInAndPastOrderByStartDesc(
-                    ownerId, statuses, LocalDateTime.now());
+                    ownerId, statuses, LocalDateTime.now(), page);
         } else {
-            bookings = bookingStorage.findAllByOwnerAndStatusInOrderByStartDesc(ownerId, statuses);
+            bookings = bookingStorage.findAllByOwnerAndStatusInOrderByStartDesc(ownerId, statuses, page);
         }
         return bookings
                 .stream()
@@ -134,23 +134,18 @@ public class BookingServiceImpl implements BookingService {
     }
 
     private User getUserById(Long userId) throws NotFoundException {
-        Optional<User> optional = userStorage.findById(userId);
-        if (userId == null || optional.isEmpty()) {
-            throw new NotFoundException(String.format("user with id %s not found", userId));
-        }
-        return optional.get();
+        return userStorage.findById(userId).orElseThrow(
+                () -> new NotFoundException(String.format("user with id %s not found", userId)));
     }
 
     private Item getItemById(Long itemId) throws NotFoundException, BadRequestException {
-        Optional<Item> optional = itemStorage.findById(itemId);
-        if (itemId == null || optional.isEmpty()) {
-            throw new NotFoundException(String.format("Item with id %s not found", itemId));
-        }
-        Item item = optional.get();
+        Item item = itemStorage.findById(itemId).orElseThrow(
+                () -> new NotFoundException(String.format("Item with id %s not found", itemId))
+        );
         if (!item.isAvailable()) {
             throw new BadRequestException(String.format("Item with id %s not available", itemId));
         }
-        return optional.get();
+        return item;
     }
 
     private void validateBooking(BookingDto bookingDto) {

@@ -13,7 +13,9 @@ public interface BookingService {
 
     BookingDto getBookingById(Long bookingId, Long userId) throws NotFoundException;
 
-    Collection<BookingDto> getAllBookingsByBookerId(Long bookerId, BookingState state) throws NotFoundException;
+    Collection<BookingDto> getAllBookingsByBookerId(Long bookerId, BookingState state,
+                                                    Integer from, Integer size) throws NotFoundException;
 
-    Collection<BookingDto> getAllBookingsByOwnerId(Long ownerId, BookingState state) throws NotFoundException;
+    Collection<BookingDto> getAllBookingsByOwnerId(Long ownerId, BookingState state,
+                                                   Integer from, Integer size) throws NotFoundException;
 }

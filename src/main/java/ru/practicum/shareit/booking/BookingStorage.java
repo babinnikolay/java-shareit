@@ -1,5 +1,6 @@
 package ru.practicum.shareit.booking;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -11,16 +12,19 @@ import java.util.Set;
 public interface BookingStorage extends JpaRepository<Booking, Long> {
 
     @Query("select b from Booking b where b.item.owner.id = ?1 and b.status in ?2 order by b.start desc")
-    Collection<Booking> findAllByOwnerAndStatusInOrderByStartDesc(Long ownerId, Set<BookingStatus> statuses);
+    Collection<Booking> findAllByOwnerAndStatusInOrderByStartDesc(Long ownerId, Set<BookingStatus> statuses,
+                                                                  PageRequest page);
 
     @Query("select b from Booking b where b.item.owner.id = ?1 and b.status in ?2 and b.start < ?3 order by b.start desc")
     Collection<Booking> findAllByOwnerAndStatusInAndPastOrderByStartDesc(
-            Long ownerId, Set<BookingStatus> statuses, LocalDateTime past);
+            Long ownerId, Set<BookingStatus> statuses, LocalDateTime past, PageRequest page);
 
-    Collection<Booking> findAllByBookerIdAndStatusInOrderByStartDesc(Long ownerId, Set<BookingStatus> statuses);
+    Collection<Booking> findAllByBookerIdAndStatusIn(Long bookerId,
+                                                     Set<BookingStatus> statuses,
+                                                     PageRequest page);
 
-    Collection<Booking> findAllByBookerIdAndStatusInAndStartBeforeOrderByStartDesc(
-            Long ownerId, Set<BookingStatus> statuses, LocalDateTime past);
+    Collection<Booking> findAllByBookerIdAndStatusInAndStartBefore(
+            Long ownerId, Set<BookingStatus> statuses, LocalDateTime past, PageRequest page);
 
     @Query("select b from Booking b where b.item.id = ?1 and b.item.owner.id = ?2 order by b.end ")
     List<Booking> findLastBookingByItemId(Long itemId, Long ownerId);
