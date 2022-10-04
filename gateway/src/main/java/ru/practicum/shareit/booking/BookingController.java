@@ -64,4 +64,5 @@ public class BookingController {
 				.orElseThrow(() -> new IllegalArgumentException("Unknown state: " + stateParam));
 		log.info("Get booking with state {}, userId={}, from={}, size={}", stateParam, userId, from, size);
 		return bookingClient.getBookingsByOwner(userId, state, from, size);
-	}}
+	}
+}

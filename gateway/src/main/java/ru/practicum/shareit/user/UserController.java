@@ -8,9 +8,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.UserDto;
 
-
-import java.util.Collection;
-
 @Controller
 @RequestMapping(path = "/users")
 @RequiredArgsConstructor
