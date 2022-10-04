@@ -47,8 +47,9 @@ public class ItemController {
     @GetMapping("/search")
     public Collection<ItemDto> searchItems(@RequestHeader(value = Constant.USER_ID_HEADER) Long userId,
                                            @RequestParam String text,
-                                           @RequestParam Integer from,
-                                           @RequestParam Integer size) throws NotFoundException {
+                                           @RequestParam(required = false, defaultValue = "0") Integer from,
+                                           @RequestParam(required = false, defaultValue = "100") Integer size)
+            throws NotFoundException {
         return itemService.searchItems(text, from, size);
     }
 
