@@ -1,20 +1,17 @@
 package ru.practicum.shareit.booking;
 
 import lombok.AllArgsConstructor;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.constant.Constant;
 import ru.practicum.shareit.exception.BadRequestException;
 import ru.practicum.shareit.exception.NotFoundException;
 
-import javax.validation.constraints.Min;
 import java.util.Collection;
 
 @RestController
 @RequestMapping(path = "/bookings")
 @AllArgsConstructor
-@Validated
 public class BookingController {
 
     private final BookingService bookingService;
@@ -29,7 +26,7 @@ public class BookingController {
     @PatchMapping("/{bookingId}")
     public BookingDto approveBooking(@PathVariable Long bookingId,
                                      @RequestHeader(Constant.USER_ID_HEADER) Long userId,
-                                     @RequestParam Boolean approved)
+                                     @RequestParam boolean approved)
             throws NotFoundException, BadRequestException {
         return bookingService.approveBooking(bookingId, userId, approved);
     }
@@ -44,9 +41,9 @@ public class BookingController {
     @GetMapping
     public Collection<BookingDto> getAllBookingsByBookerId(
             @RequestHeader(Constant.USER_ID_HEADER) Long bookerId,
-            @RequestParam(required = false, defaultValue = "ALL") BookingState state,
-            @RequestParam(required = false, defaultValue = "0") @Min(0) Integer from,
-            @RequestParam(required = false, defaultValue = "100") @Min(1) Integer size)
+            @RequestParam BookingState state,
+            @RequestParam Integer from,
+            @RequestParam Integer size)
             throws NotFoundException {
         return bookingService.getAllBookingsByBookerId(bookerId, state, from, size);
     }
@@ -54,10 +51,9 @@ public class BookingController {
     @GetMapping("/owner")
     public Collection<BookingDto> getAllBookingsByOwnerId(
             @RequestHeader(Constant.USER_ID_HEADER) Long ownerId,
-            @RequestParam(required = false, defaultValue = "ALL") BookingState state,
-            @RequestParam(required = false, defaultValue = "0") @Min(0) Integer from,
-            @RequestParam(required = false, defaultValue = "100")
-            @Min(1) Integer size)
+            @RequestParam BookingState state,
+            @RequestParam Integer from,
+            @RequestParam Integer size)
             throws NotFoundException {
         return bookingService.getAllBookingsByOwnerId(ownerId, state, from, size);
     }
