@@ -9,9 +9,8 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 
-import javax.validation.*;
+import javax.validation.Valid;
 import javax.validation.constraints.Min;
-import java.util.Set;
 
 @Controller
 @RequestMapping(path = "/items")
