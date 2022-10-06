@@ -18,10 +18,6 @@ import ru.practicum.shareit.requests.ItemRequestStorage;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserStorage;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-import javax.validation.Validation;
-import javax.validation.Validator;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -38,7 +34,6 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDto createItem(ItemDto itemDto, Long userId) throws NotFoundException {
         User user = getUserById(userId);
-        validateItem(itemDto);
         Item item = ItemMapper.toItem(itemDto);
         item.setOwner(user);
         if (itemDto.getRequestId() != null) {
@@ -116,7 +111,6 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public CommentDto createComment(Long itemId, CommentDto commentDto, Long userId)
             throws NotFoundException, BadRequestException {
-        validateComment(commentDto);
         User author = getUserById(userId);
         Item item = itemStorage.findById(itemId).orElseThrow(
                 () -> new NotFoundException(String.format("Item with id %d not found", itemId)
@@ -143,14 +137,6 @@ public class ItemServiceImpl implements ItemService {
                 () -> new NotFoundException(String.format("user with id %s not found", userId)));
     }
 
-    private void validateItem(ItemDto itemDto) {
-        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
-        Set<ConstraintViolation<ItemDto>> violations = validator.validate(itemDto);
-        if (!violations.isEmpty()) {
-            throw new ConstraintViolationException(violations);
-        }
-    }
-
     private Booking getLastItemBooking(Long itemId, Long userId) {
         List<Booking> lastBooking = bookingStorage.findLastBookingByItemId(itemId, userId);
         if (!lastBooking.isEmpty()) {
@@ -166,13 +152,4 @@ public class ItemServiceImpl implements ItemService {
         }
         return null;
     }
-
-    private void validateComment(CommentDto commentDto) {
-        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
-        Set<ConstraintViolation<CommentDto>> violations = validator.validate(commentDto);
-        if (!violations.isEmpty()) {
-            throw new ConstraintViolationException(violations);
-        }
-    }
-
 }

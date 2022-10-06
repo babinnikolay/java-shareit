@@ -23,11 +23,13 @@ public class ItemRequestController {
     @PostMapping
     public ResponseEntity<Object> createRequest(@Valid @RequestBody ItemRequestDto requestDto,
                                                 @RequestHeader("X-Sharer-User-Id") Long userId) {
+        log.info("Create request {}, userId={}", requestDto, userId);
         return requestsClient.createRequest(requestDto, userId);
     }
 
     @GetMapping
     public ResponseEntity<Object> getAllRequestsByUserId(@RequestHeader("X-Sharer-User-Id") Long userId) {
+        log.info("Get all requests userId={}", userId);
         return requestsClient.getAllRequestsByUserId(userId);
     }
 
@@ -36,12 +38,14 @@ public class ItemRequestController {
                                                     @RequestParam(required = false, defaultValue = "0") @Min(0) Integer from,
                                                     @RequestParam(required = false, defaultValue = "100")
                                                     @Min(1) Integer size) {
+        log.info("Get all request userId={}, from={}, size={}", userId, from, size);
         return requestsClient.getAllRequests(userId, from, size);
     }
 
     @GetMapping("/{itemId}")
     public ResponseEntity<Object> getItemRequest(@RequestHeader("X-Sharer-User-Id") Long ownerId,
                                          @PathVariable Long itemId) {
+        log.info("Get item request userId={}, itemId={}", ownerId, itemId);
         return requestsClient.getItemRequest(ownerId, itemId);
     }
 }

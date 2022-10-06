@@ -17,7 +17,6 @@ import ru.practicum.shareit.requests.ItemRequestStorage;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserStorage;
 
-import javax.validation.ConstraintViolationException;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -67,27 +66,19 @@ class ItemTest {
     }
 
     @Test
-    void whenItemDtoWithoutNameThenThrowValidateException() {
-        itemDto.setName("");
+    void whenItemDtoWithDescriptionThenOk() throws NotFoundException {
+        itemDto.setDescription("desc");
         when(userStorageStub.findById(userId)).thenReturn(Optional.of(user));
-        assertThrows(ConstraintViolationException.class,
-                () -> itemService.createItem(itemDto, userId));
+        ItemDto newItem = itemService.createItem(itemDto, userId);
+        assertEquals("desc", newItem.getDescription());
     }
 
     @Test
-    void whenItemDtoWithoutDescriptionThenThrowValidateException() {
-        itemDto.setDescription("");
+    void whenItemDtoWithAvailableThenOk() throws NotFoundException {
+        itemDto.setAvailable(true);
         when(userStorageStub.findById(userId)).thenReturn(Optional.of(user));
-        assertThrows(ConstraintViolationException.class,
-                () -> itemService.createItem(itemDto, userId));
-    }
-
-    @Test
-    void whenItemDtoWithoutAvailableThenThrowValidateException() {
-        itemDto.setAvailable(null);
-        when(userStorageStub.findById(userId)).thenReturn(Optional.of(user));
-        assertThrows(ConstraintViolationException.class,
-                () -> itemService.createItem(itemDto, userId));
+        ItemDto newItem = itemService.createItem(itemDto, userId);
+        assertEquals(true, newItem.getAvailable());
     }
 
     @Test

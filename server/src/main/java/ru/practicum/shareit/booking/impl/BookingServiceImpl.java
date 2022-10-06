@@ -14,10 +14,6 @@ import ru.practicum.shareit.item.ItemStorage;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserStorage;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-import javax.validation.Validation;
-import javax.validation.Validator;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.HashSet;
@@ -35,7 +31,6 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public BookingDto createBooking(BookingDto bookingDto, Long userId)
             throws NotFoundException, BadRequestException {
-        validateBooking(bookingDto);
         User user = getUserById(userId);
         Item item = getItemById(bookingDto.getItemId());
         if (userId.equals(item.getOwner().getId())) {
@@ -146,14 +141,6 @@ public class BookingServiceImpl implements BookingService {
             throw new BadRequestException(String.format("Item with id %s not available", itemId));
         }
         return item;
-    }
-
-    private void validateBooking(BookingDto bookingDto) {
-        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
-        Set<ConstraintViolation<BookingDto>> violations = validator.validate(bookingDto);
-        if (!violations.isEmpty()) {
-            throw new ConstraintViolationException(violations);
-        }
     }
 
     private Set<BookingStatus> getStatusesByBookingState(BookingState state) {

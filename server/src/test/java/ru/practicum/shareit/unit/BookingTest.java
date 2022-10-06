@@ -15,7 +15,6 @@ import ru.practicum.shareit.item.ItemStorage;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserStorage;
 
-import javax.validation.ConstraintViolationException;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -141,38 +140,6 @@ class BookingTest {
         when(itemStorageStub.findById(1L)).thenReturn(Optional.of(item));
 
         assertThrows(BadRequestException.class,
-                () -> bookingService.createBooking(bookingDto, userId));
-    }
-
-    @Test
-    void whenCreateBookingStartBeforeNowThenThrowBadRequestException() {
-        Long userId = 1L;
-        LocalDateTime now = LocalDateTime.now();
-        bookingDto.setStart(now.minusDays(1));
-
-        assertThrows(ConstraintViolationException.class,
-                () -> bookingService.createBooking(bookingDto, userId));
-    }
-
-    @Test
-    void whenCreateBookingEndBeforeStartThenThrowBadRequestException() {
-        Long userId = 1L;
-        LocalDateTime now = LocalDateTime.now();
-        bookingDto.setStart(now.plusHours(1));
-        bookingDto.setEnd(now);
-
-        assertThrows(ConstraintViolationException.class,
-                () -> bookingService.createBooking(bookingDto, userId));
-    }
-
-    @Test
-    void whenCreateBookingEndStartEqualsThenThrowBadRequestException() {
-        Long userId = 1L;
-        LocalDateTime now = LocalDateTime.now();
-        bookingDto.setStart(now.plusHours(1));
-        bookingDto.setEnd(now.plusHours(1));
-
-        assertThrows(ConstraintViolationException.class,
                 () -> bookingService.createBooking(bookingDto, userId));
     }
 

@@ -5,9 +5,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import ru.practicum.shareit.booking.dto.NextBookingDto;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.util.Set;
 
 @Getter
@@ -15,14 +12,8 @@ import java.util.Set;
 @NoArgsConstructor
 public class ItemDto {
     private Long id;
-    @Valid
-    @NotBlank(message = "Name is required")
     private String name;
-    @Valid
-    @NotBlank(message = "Description is required")
     private String description;
-    @Valid
-    @NotNull
     private Boolean available;
     private Long requestId;
     private NextBookingDto lastBooking;

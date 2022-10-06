@@ -7,9 +7,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-
 @RestControllerAdvice
 public class ErrorHandler {
 
@@ -51,16 +48,5 @@ public class ErrorHandler {
             return new ErrorResponse(String.format("Unknown state: %s", unknownState));
         }
         return new ErrorResponse(e.getMessage());
-    }
-
-    @ExceptionHandler(ConstraintViolationException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ResponseBody
-    public ValidationErrorResponse onConstraintValidationException(ConstraintViolationException e) {
-        ValidationErrorResponse error = new ValidationErrorResponse();
-        for (ConstraintViolation violation : e.getConstraintViolations()) {
-            error.getViolations().add(new Violation(violation.getPropertyPath().toString(), violation.getMessage()));
-        }
-        return error;
     }
 }

@@ -13,8 +13,6 @@ import ru.practicum.shareit.user.UserStorage;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.impl.UserServiceImpl;
 
-import javax.validation.ConstraintViolationException;
-
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -43,27 +41,6 @@ class UserTest {
         userId = 1L;
 
         user = new User();
-    }
-
-    @Test
-    void whenCreateUserWithoutNameThenThrowValidateException() {
-        userDto.setName(null);
-        assertThrows(ConstraintViolationException.class,
-                () -> userService.createUser(userDto));
-    }
-
-    @Test
-    void whenCreateUserWithoutEmailThenThrowValidateException() {
-        userDto.setEmail(null);
-        assertThrows(ConstraintViolationException.class,
-                () -> userService.createUser(userDto));
-    }
-
-    @Test
-    void whenCreateUserWithWrongEmailThenThrowValidateException() {
-        userDto.setEmail("NotAnEmail.com");
-        assertThrows(ConstraintViolationException.class,
-                () -> userService.createUser(userDto));
     }
 
     @Test

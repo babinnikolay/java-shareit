@@ -19,7 +19,6 @@ import ru.practicum.shareit.requests.ItemRequestStorage;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserStorage;
 
-import javax.validation.ConstraintViolationException;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -61,13 +60,6 @@ class CommentTest {
         item = new Item();
         commentDto = new CommentDto();
         commentDto.setText("text");
-    }
-
-    @Test
-    void whenCreateCommentWithoutTestThrowValidateException() {
-        commentDto.setText("");
-        assertThrows(ConstraintViolationException.class,
-                () -> itemService.createComment(itemId, commentDto, userId));
     }
 
     @Test

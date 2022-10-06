@@ -10,13 +10,8 @@ import ru.practicum.shareit.user.UserStorage;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.mapper.UserMapper;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-import javax.validation.Validation;
-import javax.validation.Validator;
 import java.util.Collection;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
@@ -27,7 +22,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto createUser(UserDto userDto) {
-        validateUser(userDto);
         User user = new User();
         user.setName(userDto.getName());
         user.setEmail(userDto.getEmail());
@@ -71,14 +65,6 @@ public class UserServiceImpl implements UserService {
                 .stream()
                 .map(UserMapper::toUserDto)
                 .collect(Collectors.toList());
-    }
-
-    private void validateUser(UserDto userDto) {
-        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
-        Set<ConstraintViolation<UserDto>> violations = validator.validate(userDto);
-        if (!violations.isEmpty()) {
-            throw new ConstraintViolationException(violations);
-        }
     }
 
     private void checkUserByEmail(UserDto userDto) throws ConflictException {
